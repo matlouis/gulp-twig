@@ -32,7 +32,8 @@ module.exports = function (options) {
             twig = Twig.twig,
             twigOpts = {
                 path: file.path,
-                async: false
+                async: false,
+                rethrow: true
             },
             template;
 
@@ -66,9 +67,8 @@ module.exports = function (options) {
             delete options.extend;
         }
 
-        template = twig(twigOpts);
-
         try {
+            template = twig(twigOpts);
             file.contents = new Buffer(template.render(data));
         }catch(e){
             if (options.errorLogToConsole) {

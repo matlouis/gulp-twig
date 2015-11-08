@@ -95,4 +95,28 @@ describe('gulp-twig', function () {
         twg.write(fakeFile);
     });
 
+    it('should emit an error when the template includes a non-existent file', function (done) {
+        var twg = twig({
+            // Disable twig.js error logs to not pollute the test output.
+            extend: function(Twig) {
+                Twig.log.error = function() {};
+            }
+        });
+
+        var fakeFile = new gutil.File({
+            base: 'test/',
+            cwd: 'test/',
+            path: path.join(__dirname, '/templates/invalid-include.twig'),
+            contents: fs.readFileSync(__dirname + '/templates/invalid-include.twig')
+        });
+
+        twg.on('error', function(error) {
+            should.exist(error);
+            should.exist(error.message);
+            String(error.message).should.startWith('ENOENT, no such file or directory');
+            done();
+        });
+
+        twg.write(fakeFile);
+    });
 });
